@@ -4,9 +4,9 @@ from matplotlib.path import Path
 import matplotlib.patches as patches
 from matplotlib.widgets import Slider, Button
 import matplotlib
-
+from Colors import Colors
 matplotlib.use('Qt5Agg')
-
+c = Colors()
 
 t = .5
 
@@ -55,8 +55,8 @@ def print_lines(points, ax, t):
 
     iterations = b_curve(t, points)
 
-    for i in range(len(iterations)):
-        lines.append(drawPolygon(iterations[i], ax, color="lightcoral"))
+    for i in range(1,len(iterations)+1):
+        lines.append(drawPolygon(iterations[-i], ax, color= c.getColor()))
 
 
 fig, ax = plt.subplots()
@@ -73,7 +73,7 @@ t_slider = Slider(
     valinit=t,
 )
 
-controlPoints = np.array([[1, 2], [2, 3], [3, 1.5], [4, 3]])
+controlPoints = np.array([[0, 1],[0.5,4], [2, 3], [3, 1.5], [4, 3],[5,0.3]])
 
 
 
@@ -83,6 +83,7 @@ ax.add_patch(circle)
 
 
 def redraw():
+    c.resetIndex()
     print_lines(controlPoints, ax, t)
     p = b_curve(t, controlPoints)[0][0]
     circle.set_center(p)
@@ -91,6 +92,7 @@ def redraw():
 def redrawAll():
     redraw()
     print_curve(controlPoints, ax)
+
 
 redrawAll()
 
