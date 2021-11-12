@@ -26,8 +26,3 @@ class PolygonContainer:
             path = Path(line, closed=False)
             patch = patches.PathPatch(path, facecolor='none', edgecolor=color, lw=self.lineWidth)
             self.patches.append(self.ax.add_patch(patch))
-        """vector = self.lines[-2][1] - self.lines[-2][0]
-        arrow = self.ax.arrow(self.lines[-1][0], self.lines[-1][1], vector[0], vector[1])
-        path = Path(arrow, closed=False)
-        patch = patches.PathPatch(path, facecolor='none', edgecolor='black', lw=self.lineWidth)
-        self.patches.append(self.ax.add_patch(patch))"""
