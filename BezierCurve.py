@@ -12,6 +12,7 @@ from PolygonContainer import PolygonContainer
 matplotlib.use('Qt5Agg')
 c = Colors()
 curves = []
+arrow = None
 polinoms = []
 t = .5
 
@@ -86,8 +87,11 @@ def drawLines(points, t):
     controlPolygonContainer.clearLines()
     for i in range(1, len(iterations) + 1):
         controlPolygonContainer.addLine(iterations[-i], c.getColor())
+    vector = iterations[1][1] - iterations[1][0]
+    global arrow
+    if arrow != None: arrow.remove()
+    arrow = ax[0].arrow(iterations[0][0][0], iterations[0][0][1], vector[0], vector[1], head_width = 0.02)
     controlPolygonContainer.redraw()
-
 
 axTSlider = plt.axes([0.15, 0.1, 0.65, 0.03])
 global t_slider
