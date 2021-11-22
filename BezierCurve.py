@@ -87,11 +87,14 @@ def drawLines(points, t):
     controlPolygonContainer.clearLines()
     for i in range(1, len(iterations) + 1):
         controlPolygonContainer.addLine(iterations[-i], c.getColor())
-    vector = iterations[1][1] - iterations[1][0]
+
+    vector = (iterations[1][1] - iterations[1][0])*0.2
     global arrow
     if arrow != None: arrow.remove()
-    arrow = ax[0].arrow(iterations[0][0][0], iterations[0][0][1], vector[0], vector[1], head_width = 0.02)
+
+    arrow = ax[0].arrow(iterations[0][0][0], iterations[0][0][1], vector[0], vector[1], head_width=0.02,zorder=10)
     controlPolygonContainer.redraw()
+
 
 axTSlider = plt.axes([0.15, 0.1, 0.65, 0.03])
 global t_slider
@@ -122,7 +125,7 @@ def on_move(o):
 
 
 def add_control_point(_ax, x, y):
-    circle = PressablePoint(_ax, [x, y], on_remove, on_move,c.colors[len(controlPoints)])
+    circle = PressablePoint(_ax, [x, y], on_remove, on_move, c.colors[len(controlPoints)])
     circle.connect()
     controlPoints.append(circle)
     global controlPointsCoordinates
