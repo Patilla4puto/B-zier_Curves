@@ -71,15 +71,16 @@ def drawPoints(axis, points):
 
 def createBezierSurface(points, jSteps, tSteps):
     grid = np.empty((jSteps, tSteps, 3))
-    for j in np.arange(0, 1.0, 1 / jSteps):
-        for t in np.arange(0, 1.0, 1 / tSteps):
+    for j in np.arange(0, 1.0+1/(jSteps-1), 1 / jSteps):
+        for t in np.arange(0, 1.0 +1 / (tSteps-1), 1 / tSteps):
             p = deCasteljauSurface(j, t, points)
-            grid[int(j * jSteps), int(t * tSteps)] = p
+            grid[int(j * (jSteps-1)), int(t * (tSteps - 1))] = p
     return grid
-
-
-tri = np.array([[0, 0, 0], [1, 0, 2], [2, 0, 1]])
-addTriangle(tri)
+def drawSurface( grid):
+    for i in range(len(grid)-1):
+        for j in range (len(grid[i])-1):
+            addTriangle([grid[i][j],grid[i+1][j],grid[i][j+1]])
+            addTriangle([grid[i][j+1],grid[i+1][j],grid[i+1][j+1]])
 
 points = np.array(
     [[[1, 1, 1], [1, 2, 0], [1, 4, 1]],
@@ -91,6 +92,7 @@ ax = fig.add_subplot(1, 1, 1, projection='3d')
 grid = createBezierSurface(points, 10, 10)
 
 drawPoints(ax,points)
+drawSurface(grid)
 drawTriangles(ax)
 
 plt.show()
