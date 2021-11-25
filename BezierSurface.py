@@ -10,10 +10,6 @@ vertices = np.empty((0, 3))
 triangles = np.empty((0, 3))
 
 colors = Colors()
-points = np.array(
-    [[[1, 1, 1], [1, 2, 0], [1, 4, 1]],
-     [[2.5, 1, 1], [2.5, 2, 1], [2.5, 4, 1]],
-     [[4, 1, 1], [4, 2, 2], [4, 4, 1]]])
 
 
 def deCasteljauCurves(t, points):
@@ -40,16 +36,19 @@ def addTriangle(points):
     global triangles
     vertices = np.append(vertices, points, axis=0)
     vertexCount = len(vertices)
-    # triangle consists of indices of the last 3 vertices
+    # a triangle consists of indices of the last 3 vertices
     triangle = [vertexCount - 1, vertexCount - 2, vertexCount - 3]
     triangles = np.append(triangles, [triangle], axis=0)
 
 
 def drawTriangles(axis):
+    x = vertices[:, 0]
+    y = vertices[:, 1]
+    z = vertices[:, 2]
     axis.plot_trisurf(x, y, z, triangles=triangles, edgecolor=[[0, 0, 0]], linewidth=1.0, alpha=0.5, shade=True);
 
 
-def drawPoints(axis):
+def drawPoints(axis, points):
     for array in points:
         xhs = []
         yhs = []
@@ -70,15 +69,28 @@ def drawPoints(axis):
             axis.plot(xvs, yvs, zvs, color="Black")
 
 
-# tri = np.array([[0, 0, 0], [1, 0, 2], [2, 0, 1]])
-# addTriangle(tri)
+def createBezierSurface(points, jSteps, tSteps):
+    grid = np.empty((jSteps, tSteps, 3))
+    for j in np.arange(0, 1.0, 1 / jSteps):
+        for t in np.arange(0, 1.0, 1 / tSteps):
+            p = deCasteljauSurface(j, t, points)
+            grid[int(j * jSteps), int(t * tSteps)] = p
+    return grid
 
-x = vertices[:, 0]
-y = vertices[:, 1]
-z = vertices[:, 2]
+
+tri = np.array([[0, 0, 0], [1, 0, 2], [2, 0, 1]])
+addTriangle(tri)
+
+points = np.array(
+    [[[1, 1, 1], [1, 2, 0], [1, 4, 1]],
+     [[2.5, 1, 1], [2.5, 2, 1], [2.5, 4, 1]],
+     [[4, 1, 1], [4, 2, 2], [4, 4, 1]]])
 
 ax = fig.add_subplot(1, 1, 1, projection='3d')
-drawPoints(ax)
-#drawTriangles(ax)
+
+grid = createBezierSurface(points, 10, 10)
+
+drawPoints(ax,points)
+drawTriangles(ax)
 
 plt.show()
