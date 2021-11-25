@@ -186,3 +186,4 @@ fig.canvas.mpl_connect('button_release_event', onCanvasClick)
 redrawAll()
 t_slider.on_changed(updateT)
 plt.show()
+
