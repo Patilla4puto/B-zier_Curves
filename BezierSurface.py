@@ -96,9 +96,11 @@ def drawSurface( grid):
         for j in range(len(grid[i])-1):
             addTriangle([grid[i][j],grid[i+1][j],grid[i][j+1]])
             addTriangle([grid[i][j+1],grid[i+1][j],grid[i+1][j+1]])
-def getVectorsPoint(points, s, t):
-    p = deCasteljauSurface(s, t, points)[1]
-    print(p)
+def drawVectorsPoint(points, s, t,ax):
+    p0,va0= deCasteljauSurface(s, t, points)
+    v = va0[1]-va0[0]
+    print(p0,v)
+    ax.quiver(p0[0][0], p0[0][1], p0[0][2], v[0], v[1], v[2], length=0.5, normalize=True, color="red")
     aux =points[:].transpose(1,0,2)
     q = deCasteljauSurface(s, t, aux)[1]
 """def drawVectors(points,t,k):
@@ -123,7 +125,7 @@ w = [2]
 ax.quiver(x, y, z, u, v, w, length=0.5, normalize=True,color="red")
 
 grid = createBezierSurface(points, 10, 10)
-getVectorsPoint(points, 0.1, 0.1)
+drawVectorsPoint(points, 0.1, 0.1,ax)
 drawPoints(ax,points)
 drawSurface(grid)
 drawTriangles(ax)
