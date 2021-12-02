@@ -57,7 +57,7 @@ def drawTriangles(axis):
     x = vertices[:, 0]
     y = vertices[:, 1]
     z = vertices[:, 2]
-    axis.plot_trisurf(x, y, z, triangles=triangles, edgecolor=[[0, 0, 0]], linewidth=1.0, alpha=0.5, shade=True);
+    axis.plot_trisurf(x, y, z, triangles=triangles, edgecolor=[[0, 0, 0, 0.2]], linewidth=0.2, alpha=0.35, shade=True);
 
 
 def drawPoints(axis, points):
@@ -69,7 +69,7 @@ def drawPoints(axis, points):
             xhs.append(e[0])
             yhs.append(e[1])
             zhs.append(e[2])
-        axis.plot(xhs, yhs, zhs, color="Black")
+        axis.plot(xhs, yhs, zhs, color="slateblue")
     for i in range(len(points[0])):
         xvs = []
         yvs = []
@@ -78,7 +78,7 @@ def drawPoints(axis, points):
             xvs.append(array[i][0])
             yvs.append(array[i][1])
             zvs.append(array[i][2])
-            axis.plot(xvs, yvs, zvs, color="Black")
+            axis.plot(xvs, yvs, zvs, color="slateblue")
 
 
 def createBezierSurface(points, sSteps, tSteps):
@@ -98,36 +98,33 @@ def drawSurface( grid):
             addTriangle([grid[i][j+1],grid[i+1][j],grid[i+1][j+1]])
 def drawVectorsPoint(points, s, t,ax):
     p0,va0= deCasteljauSurface(s, t, points)
-    v = va0[1]-va0[0]
-    print(p0,v)
-    ax.quiver(p0[0][0], p0[0][1], p0[0][2], v[0], v[1], v[2], length=0.5, normalize=True, color="red")
+    v0 = va0[1]-va0[0]
+    print(p0)
+    ax.quiver(p0[0][0], p0[0][1], p0[0][2], v0[0], v0[1], v0[2], length=0.5, normalize=False, color="green",linewidth=2)
     aux =points[:].transpose(1,0,2)
-    q = deCasteljauSurface(s, t, aux)[1]
+    p1,va1 = deCasteljauSurface(t, s , aux)
+    v1 = va1[1] - va1[0]
+    ax.quiver(p1[0][0], p1[0][1], p1[0][2], v1[0], v1[1], v1[2], length=0.5, normalize=False, color="red", linewidth=2)
+    v2 = np.cross(v0, v1)
+    ax.quiver(p1[0][0], p1[0][1], p1[0][2], v2[0], v2[1], v2[2], length=0.5, normalize=True, color="blue", linewidth=2)
 """def drawVectors(points,t,k):
     print(deCasteljauCurves(points,t))
     print(deCasteljauCurves(points.transpose(),k))"""
 points = np.array([np.array([[1, 1, 1], [1, 2, 0], [1, 4, 1]]),
-     np.array([[2.5, 1, 1], [2.5, 2, 1], [2.5, 4, 1]]),
-     np.array([[4, 1, 1], [4, 2, 2], [4, 4, 1]])])
+     np.array([[2.5, 1, 4], [2.5, 3, 6], [2.5, 4, 2]]),
+     np.array([[4, 1, 0], [4, 2, 1], [4, 4, 0]])])
 #deCasteljauSurface(0.5, 0.5, points)
 
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 
-# Make the grid
-x = [1]
-y = [1]
-z = [1]
-# Make the direction data for the arrows
-u = [2]
-v = [3]
-w = [2]
-
-ax.quiver(x, y, z, u, v, w, length=0.5, normalize=True,color="red")
 
 grid = createBezierSurface(points, 10, 10)
-drawVectorsPoint(points, 0.1, 0.1,ax)
 drawPoints(ax,points)
 drawSurface(grid)
 drawTriangles(ax)
+drawVectorsPoint(points, 0.5, 0.5,ax)
+
+
+
 
 plt.show()
