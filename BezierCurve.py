@@ -41,6 +41,7 @@ def bernstein_Polynomi(_t, points):
 
 def deCasteljau(t, points):
     a = [points]
+    print(a)
     for r in range(1, len(points)):
         lenght = (len(a[0]) - 1)
         a.insert(0, [0] * lenght)

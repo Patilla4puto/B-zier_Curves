@@ -13,22 +13,34 @@ colors = Colors()
 
 
 def deCasteljauCurves(t, points):
-    a = points
+    """a = points
     for r in range(1, len(points)):
         lenght = (len(a) - 1)
         aux = [0] * lenght
         for j in range(lenght):
             aux[j] = ((1 - t) * a[j] + t * a[j + 1])
         a = aux
-    return a[0]
+    print(aux)
+    return a"""
+    a = [points]
+
+    for r in range(1, len(points)):
+        lenght = (len(a[0]) - 1)
+        a.insert( 0,lenght *[0] )
 
 
-def deCasteljauSurface(j, t, points):
+        for j in range(lenght):
+            a[0][j] = ((1 - t) * a[1][j] + t * a[1][j + 1])
+
+    return a[0],a[1]
+
+
+def deCasteljauSurface(s, t, points):
     list = []
     for e in points:
-        list.append(deCasteljauCurves(t, e))
-        print(list)
-    return (deCasteljauCurves(j, list))
+        list.append(deCasteljauCurves(t, e)[0][0])
+        #print(list)
+    return (deCasteljauCurves(s, list))
 
 
 def addTriangle(points):
@@ -69,28 +81,39 @@ def drawPoints(axis, points):
             axis.plot(xvs, yvs, zvs, color="Black")
 
 
-def createBezierSurface(points, jSteps, tSteps):
-    grid = np.empty((jSteps, tSteps, 3))
-    for j in np.arange(0, 1.0+1/(jSteps-1), 1 / jSteps):
-        for t in np.arange(0, 1.0 +1 / (tSteps-1), 1 / tSteps):
-            p = deCasteljauSurface(j, t, points)
-            grid[int(j * (jSteps-1)), int(t * (tSteps - 1))] = p
+def createBezierSurface(points, sSteps, tSteps):
+    grid = np.empty((sSteps + 1, tSteps + 1, 3))
+    for j in np.arange(0, 1.0+1/(sSteps), 1 / sSteps):
+        for t in np.arange(0, 1.0 +1 / (tSteps), 1 / tSteps):
+
+            p = deCasteljauSurface(j, t, points)[0]
+
+            grid[int(j * (sSteps)), int(t * (tSteps))] = p[0]
+
     return grid
 def drawSurface( grid):
     for i in range(len(grid)-1):
-        for j in range (len(grid[i])-1):
+        for j in range(len(grid[i])-1):
             addTriangle([grid[i][j],grid[i+1][j],grid[i][j+1]])
             addTriangle([grid[i][j+1],grid[i+1][j],grid[i+1][j+1]])
-
-points = np.array(
-    [[[1, 1, 1], [1, 2, 0], [1, 4, 1]],
-     [[2.5, 1, 1], [2.5, 2, 1], [2.5, 4, 1]],
-     [[4, 1, 1], [4, 2, 2], [4, 4, 1]]])
+def getVectorsPoint(points, s, t):
+    p = deCasteljauSurface(s, t, points)[1]
+    print(p)
+    aux =points[:].transpose(1,0,2)
+    q = deCasteljauSurface(s, t, aux)[1]
+"""def drawVectors(points,t,k):
+    print(deCasteljauCurves(points,t))
+    print(deCasteljauCurves(points.transpose(),k))"""
+points = np.array([np.array([[1, 1, 1], [1, 2, 0], [1, 4, 1]]),
+     np.array([[2.5, 1, 1], [2.5, 2, 1], [2.5, 4, 1]]),
+     np.array([[4, 1, 1], [4, 2, 2], [4, 4, 1]])])
+#deCasteljauSurface(0.5, 0.5, points)
 
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 
-grid = createBezierSurface(points, 10, 10)
 
+grid = createBezierSurface(points, 10, 10)
+getVectorsPoint(points, 0.1, 0.1)
 drawPoints(ax,points)
 drawSurface(grid)
 drawTriangles(ax)
