@@ -111,6 +111,16 @@ points = np.array([np.array([[1, 1, 1], [1, 2, 0], [1, 4, 1]]),
 
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 
+# Make the grid
+x = [1]
+y = [1]
+z = [1]
+# Make the direction data for the arrows
+u = [2]
+v = [3]
+w = [2]
+
+ax.quiver(x, y, z, u, v, w, length=0.5, normalize=True,color="red")
 
 grid = createBezierSurface(points, 10, 10)
 getVectorsPoint(points, 0.1, 0.1)
