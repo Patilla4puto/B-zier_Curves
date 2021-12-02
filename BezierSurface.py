@@ -111,7 +111,7 @@ def drawVectorsPoint(points, s, t,ax):
     print(deCasteljauCurves(points,t))
     print(deCasteljauCurves(points.transpose(),k))"""
 points = np.array([np.array([[1, 1, 1], [1, 2, 0], [1, 4, 1]]),
-     np.array([[2.5, 1, 4], [2.5, 3, 6], [2.5, 4, 2]]),
+     np.array([[2.5, 1, 2], [2.5, 3, 4], [2.5, 4, 2]]),
      np.array([[4, 1, 0], [4, 2, 1], [4, 4, 0]])])
 #deCasteljauSurface(0.5, 0.5, points)
 
