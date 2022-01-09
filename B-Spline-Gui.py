@@ -194,7 +194,7 @@ def draw_BSpline_Curve():
     min = knots[n-1]
     max = knots[-(n)]
     bSplinePoints = []
-    for _u in np.arange(min, max, (max - min) / 20):
+    for _u in np.arange(min + 0.0000001, max, (max - min) / 20):
         p, _ = b_spline(n, knots, controlPointsCoordinates, _u)
         bSplinePoints.append(p[0])
 
