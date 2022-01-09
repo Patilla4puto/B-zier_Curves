@@ -54,9 +54,7 @@ class KnotPlot:
         plt.figtext(pos.x0, 0.75, 'left click: move\nright click: add/remove')
 
         self.tooltip.set_visible(False)
-
         self.plot, = self.ax.plot([], [], 'v')
-
         self.redraw()
 
         self.cidpress = self.fig.canvas.mpl_connect('button_press_event', self.on_press)

@@ -84,8 +84,7 @@ def deBoorgit (n, ui, ri, di, u):
     return final_d, derivative, ui_final, ri_final
 
 
-print(b_spline(2, [-10, -6, -2, -2, 0, 4, 8, 12, 16, 18], {-10: 1, -6 : 1 , -2 : 2 , 0 : 1, 4 : 1 , 8 : 1 , 12: 1, 16: 1, 18: 1},
-               [-6, -4, -2, 0, -8, 0, 8, 4, 2], -1))
+
 
 def drawBersteinpolinoms(points):
     bernsteinContainer.clearLines()

@@ -33,10 +33,20 @@ tangentArrow = None
 
 
 def on_remove(p):
-    print("remove")
+    p.disconnect()
+    controlPoints.remove(p)
+    global controlPointsCoordinates
+    controlPointsCoordinates = np.array(list(map(lambda p: p.get_coordinates(), controlPoints)))
+    redrawAll()
 
 
-def onUpdate():
+def onUpdate(p):
+    global controlPointsCoordinates
+    controlPointsCoordinates = np.array(list(map(lambda p: p.get_coordinates(), controlPoints)))
+    redrawAll()
+
+
+def onUpdateKnots():
     t_slider.closedmin = knots.min()
     t_slider.closedmax = knots.max()
     t_slider.valmin = knots.min()
@@ -51,19 +61,14 @@ def onUpdate():
         t_slider.set_val(t_slider.valmax)
         u = t_slider.valmax
 
-    global controlPointsCoordinates
-    controlPointsCoordinates = np.array(list(map(lambda p: p.get_coordinates(), controlPoints)))
-    redrawAll()
-
 
 curveContainer = PolygonContainer(ax[0], 2)
 controlPolygonContainer = PolygonContainer(ax[0])
-scatterplot = KnotPlot(fig, ax[1], knots, on_remove, onUpdate)
+scatterplot = KnotPlot(fig, ax[1], knots, on_remove, onUpdateKnots)
 
 
 def submit(text):
     degree = eval(text)
-    print(degree)
     global n
     n = degree
 
@@ -130,16 +135,21 @@ def draw_BSpline_Curve():
     curveContainer.addLine(bSplinePoints, 'red')
     curveContainer.redraw()
 
-
 def redrawAll():
     global controlPointsCoordinates
     draw_control_polygon(controlPointsCoordinates)
     draw_BSpline_Curve()
     plt.draw()
     drawTangentArrow()
-    print("redraw all")
     fig.canvas.draw()
 
+def onCanvasClick(event):
+    if event.button is MouseButton.RIGHT and event.xdata and event.ydata:
+        add_control_point(ax[0], event.xdata, event.ydata)
+        redrawAll()
+
+
+fig.canvas.mpl_connect('button_release_event', onCanvasClick)
 
 add_control_point(ax[0], 0.1, 0.1)
 add_control_point(ax[0], 0.1, 0.2)
