@@ -49,43 +49,6 @@ def deCasteljau(t, points):
             a[0][j] = ((1 - t) * a[1][j] + t * a[1][j + 1])
     return a
 
-def deBoorgit (n, ui, ri, di, u):
-    #ui_final -> final list of knots
-    #indexU -> uppercase I in Boor Algorithm
-    ui_final = ui[:]
-    #ri_final -> new multiplicity
-    ri_final = ri.copy()
-    indexU = 0
-    r = 0
-    for i in range(1,len(ui)):
-        indexU = i - 1
-        if  ui[i-1] <= u <= ui[i]:
-            if u == ui[i -1]:
-                r = ri[u]
-                ri_final[u] += 1
-            else:
-                ri_final[u] = 1
-            break
-    #final_d -> final list of Boor coordinates
-    final_d = []
-    #final_e -> final list of Greville abcises
-    for j in range(r, n+1):
-        final_d.append([0][:]*(n + 1  -j))
-    for j in range(r, n + 1):
-        final_d[r][j - r] = di[indexU - n + 1 + j]
-    ui_final.insert(indexU + 1, u)
-    for k in range(r + 1, n):
-        for j in range(0, n - k + 1):
-            alpha = (u - ui[indexU - n + k + j])/(ui[indexU + 1 + j] - ui[indexU - n + k + j])
-            final_d[k][j] = (1-alpha)*final_d[k-1][j] + alpha*final_d[k-1][j+1]
-    derivative = (n / (ui[indexU + 1] - ui[indexU]))*(final_d[n-1][1] - final_d[n-1][0])
-    final_alpha = (u - ui[indexU]) / (ui[indexU + 1] - ui[indexU])
-    final_d[n][0] = (1-final_alpha)*final_d[n-1][0] + final_alpha*final_d[n-1][1]
-    return final_d, derivative, ui_final, ri_final
-
-
-print(b_spline(2, [-10, -6, -2, -2, 0, 4, 8, 12, 16, 18], {-10: 1, -6 : 1 , -2 : 2 , 0 : 1, 4 : 1 , 8 : 1 , 12: 1, 16: 1, 18: 1},
-               [-6, -4, -2, 0, -8, 0, 8, 4, 2], -1))
 
 def drawBersteinpolinoms(points):
     bernsteinContainer.clearLines()
