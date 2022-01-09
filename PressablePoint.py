@@ -42,7 +42,6 @@ class PressablePoint:
 
     def on_motion(self, event):
         if event.button is MouseButton.LEFT and self.press and event.xdata and event.ydata:
-            print(event.xdata)
             self.circle.center = (event.xdata, event.ydata)
             self.circle.figure.canvas.draw()
             self.onMove(self)

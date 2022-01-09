@@ -5,27 +5,6 @@ import matplotlib.pyplot as plt
 
 class KnotPlot:
 
-    def redraw(self):
-        y = np.zeros(len(self.knots))  # np.linspace(0, 9, 20)
-
-        if self.selectedKnot is None:
-            self.knots[:] = np.sort(self.knots)
-        else:
-            currValue = self.knots[self.selectedKnot]
-            self.knots[:] = np.sort(self.knots)
-
-            self.selectedKnot = 0
-            for i in range(len(self.knots)):
-                if self.knots[i] == currValue:
-                    self.selectedKnot = i
-
-        for i in range(len(self.knots)):
-            if i + 1 < len(self.knots) and self.knots[i] == self.knots[i + 1]:
-                y[i + 1] = y[i] + 0.5  # 0.5
-
-        self.plot.set_data(self.knots, y)
-        self.fig.canvas.draw()
-
     def __init__(self, fig, ax, knots, onRemove, onUpdate):
         self.onRemove = onRemove
         self.onUpdate = onUpdate
@@ -60,6 +39,27 @@ class KnotPlot:
         self.cidpress = self.fig.canvas.mpl_connect('button_press_event', self.on_press)
         self.cidrelease = self.fig.canvas.mpl_connect('button_release_event', self.on_release)
         self.cidmotion = self.fig.canvas.mpl_connect('motion_notify_event', self.on_motion)
+
+    def redraw(self):
+        y = np.zeros(len(self.knots))  # np.linspace(0, 9, 20)
+
+        if self.selectedKnot is None:
+            self.knots[:] = np.sort(self.knots)
+        else:
+            currValue = self.knots[self.selectedKnot]
+            self.knots[:] = np.sort(self.knots)
+
+            self.selectedKnot = 0
+            for i in range(len(self.knots)):
+                if self.knots[i] == currValue:
+                    self.selectedKnot = i
+
+        for i in range(len(self.knots)):
+            if i + 1 < len(self.knots) and self.knots[i] == self.knots[i + 1]:
+                y[i + 1] = y[i] + 0.5  # 0.5
+
+        self.plot.set_data(self.knots, y)
+        self.fig.canvas.draw()
 
     def on_press(self, event):
         if event.inaxes != self.ax:
