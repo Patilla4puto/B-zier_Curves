@@ -89,11 +89,15 @@ def onUpdate(p):
     redrawAll()
 
 
-def onUpdateKnots():
-    t_slider.closedmin = knots.min()
-    t_slider.closedmax = knots.max()
-    t_slider.valmin = knots.min()
-    t_slider.valmax = knots.max()
+def onUpdateKnots(k):
+    global knots
+    knots = k
+    min = knots[n - 1]
+    max = knots[-(n)]
+    t_slider.closedmin = min
+    t_slider.closedmax = max
+    t_slider.valmin = min
+    t_slider.valmax = max
 
     global u
     if u < t_slider.valmin:
@@ -113,6 +117,7 @@ scatterplot = KnotPlot(fig, ax[1], knots, on_remove, onUpdateKnots)
 
 axbox = plt.axes([0.3, 0.05, 0.4, 0.075])
 text_box = TextBox(axbox, '', initial="Degree 2")
+
 
 def incrementDegree(p):
     global n
@@ -135,16 +140,23 @@ bnext.on_clicked(decrementDegree)
 bprev = Button(axincr, '+')
 bprev.on_clicked(incrementDegree)
 
-
-
 axTSlider = plt.axes([.1, 0.15, 0.8, 0.075])
 t_slider = Slider(
     ax=axTSlider,
     label='u',
-    valmin=knots.min(),
-    valmax=knots.max(),
+    valmin=0,
+    valmax=10,
     valinit=u,
 )
+
+
+def updateU(val):
+    global u
+    u = val
+    redrawAll()
+
+
+t_slider.on_changed(updateU)
 
 
 def b_spline(n, ui, di, u):  # ui: knots, di: control points
@@ -153,18 +165,18 @@ def b_spline(n, ui, di, u):  # ui: knots, di: control points
     :param ui: knot sequence eg.  [0. 1. 2. 3. 4. 5.]
     :param di: control points eg. [[0.1 0.1] [0.1 0.2] [0.2 0.2] [0.2 0.1]]
     :param u:
-    :return: point on bspline curve for the given u, and derivative
+    :return: point and derivative on bspline curve for the given u
     """
-    #calculate multiplicities
+    # calculate multiplicities
     ri = dict()
     for i in ui:
-        if not(i in ri.keys()):
+        if not (i in ri.keys()):
             ri[i] = 1
         else:
             ri[i] += 1
     final_d, derivative, ui_final, ri_final = deBoor(n, ui.tolist(), ri, di, u)
 
-    return np.array(final_d[-1]), derivative
+    return np.array(final_d[-1][0]), derivative
 
 
 def add_control_point(_ax, x, y):
@@ -191,12 +203,12 @@ def drawTangentArrow():
 
 
 def draw_BSpline_Curve():
-    min = knots[n-1]
+    min = knots[n - 1]
     max = knots[-(n)]
     bSplinePoints = []
-    for _u in np.arange(min + 0.0000001, max, (max - min) / 20):
+    for _u in np.arange(min + 0.0000001, max, (max - min) / 50):
         p, _ = b_spline(n, knots, controlPointsCoordinates, _u)
-        bSplinePoints.append(p[0])
+        bSplinePoints.append(p)
 
     curveContainer.clearLines()
     curveContainer.addLine(bSplinePoints, 'red')
@@ -208,12 +220,15 @@ def redrawAll():
     draw_control_polygon(controlPointsCoordinates)
     draw_BSpline_Curve()
     plt.draw()
-    #drawTangentArrow()
+    drawTangentArrow()
     print("redraw all")
     fig.canvas.draw()
 
 
 def onCanvasClick(event):
+    if event.inaxes != ax[0]:
+        return
+
     if event.button is MouseButton.RIGHT and event.xdata and event.ydata:
         add_control_point(ax[0], event.xdata, event.ydata)
         redrawAll()
@@ -227,6 +242,7 @@ add_control_point(ax[0], 0.2, 0.2)
 add_control_point(ax[0], 0.2, 0.15)
 add_control_point(ax[0], 0.2, 0.1)
 
+onUpdateKnots(knots)
 redrawAll()
 
 plt.show()

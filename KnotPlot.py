@@ -92,7 +92,7 @@ class KnotPlot:
                 self.selectedKnot = None
 
             self.redraw()
-            self.onUpdate()
+            self.onUpdate(self.knots)
 
     def on_release(self, event):
         if event.button is MouseButton.LEFT and self.selectedKnot is not None:  # and not self.moved:
@@ -119,7 +119,7 @@ class KnotPlot:
             self.tooltip.xy = [x, 0]
             self.tooltip.set_visible(True)
             self.redraw()
-            self.onUpdate()
+            self.onUpdate(self.knots)
 
         self.moved = True
 
