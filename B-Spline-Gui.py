@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import TextBox
 from matplotlib.widgets import Slider
+from matplotlib.widgets import Button
+
 import matplotlib
 import scipy.special as s
 from matplotlib.backend_bases import MouseButton
@@ -61,21 +63,38 @@ def onUpdateKnots():
         t_slider.set_val(t_slider.valmax)
         u = t_slider.valmax
 
+    redrawAll()
+
 
 curveContainer = PolygonContainer(ax[0], 2)
 controlPolygonContainer = PolygonContainer(ax[0])
 scatterplot = KnotPlot(fig, ax[1], knots, on_remove, onUpdateKnots)
 
+axbox = plt.axes([0.3, 0.05, 0.4, 0.075])
+text_box = TextBox(axbox, '', initial="Degree 2")
 
-def submit(text):
-    degree = eval(text)
+def incrementDegree(p):
     global n
-    n = degree
+    n += 1
+    text_box.set_val("Degree %d" % n)
+    redrawAll()
 
 
-axbox = plt.axes([0.1, 0.05, 0.8, 0.075])
-text_box = TextBox(axbox, 'Degree', initial="2")
-text_box.on_submit(submit)
+def decrementDegree(p):
+    global n
+    n = max(2, n - 1)
+    text_box.set_val("Degree %d" % n)
+    redrawAll()
+
+
+axdecr = plt.axes([0.1, 0.05, 0.2, 0.075])
+axincr = plt.axes([0.7, 0.05, 0.2, 0.075])
+bnext = Button(axdecr, '-')
+bnext.on_clicked(decrementDegree)
+bprev = Button(axincr, '+')
+bprev.on_clicked(incrementDegree)
+
+
 
 axTSlider = plt.axes([.1, 0.15, 0.8, 0.075])
 t_slider = Slider(
@@ -95,6 +114,8 @@ def b_spline(n, ui, di, u):  # ui: knots, di: control points
     :param u:
     :return: point on bspline curve for the given u, and derivative
     """
+    print(ui)
+    print(di)
     d = np.array([u, 0.5 * u])  # TODO implement bspline
     derivative = np.array([1, 1])  # TODO implement bspline
     return d, derivative
@@ -135,6 +156,7 @@ def draw_BSpline_Curve():
     curveContainer.addLine(bSplinePoints, 'red')
     curveContainer.redraw()
 
+
 def redrawAll():
     global controlPointsCoordinates
     draw_control_polygon(controlPointsCoordinates)
@@ -142,6 +164,7 @@ def redrawAll():
     plt.draw()
     drawTangentArrow()
     fig.canvas.draw()
+
 
 def onCanvasClick(event):
     if event.button is MouseButton.RIGHT and event.xdata and event.ydata:
