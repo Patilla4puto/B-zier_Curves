@@ -4,14 +4,19 @@
 * Perez Corral, Cristian
 * Meyran, Tim
 
+## Dependencies
+* python
+* matplotlib
+* numpy
+
 ## Bézier Curves
 
-launch ``` BezierCurve.py ```
+launch ```python BezierCurve.py ```
 
 ## Bézier Surfaces
 
-launch ``` BezierSurface.py ```
+launch ```python BezierSurface.py ```
 
 ## B-Spline Curves
 
-launch ```B-Spline.py ```
+launch ```python B-Spline.py ```
