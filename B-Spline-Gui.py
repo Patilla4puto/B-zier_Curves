@@ -73,7 +73,6 @@ def deBoor(n, ui, ri, di, u):
             final_d[r][j - r] = di[0]
         else:
             final_d[r][j - r] = di[indexU - n + j + 1]
-        print(indexU - n + j + 1)
     ui_final.insert(indexU + 1, u)
     # Linear interpolation part of the deBoor algorithm
     for k in range(r + 1, n):
@@ -85,7 +84,6 @@ def deBoor(n, ui, ri, di, u):
     final_alpha = (u - ui[indexU]) / (ui[indexU + 1] - ui[indexU])
     final_d[n][0] = (1 - final_alpha) * final_d[n - 1][0] + final_alpha * final_d[n - 1][1]
     return final_d, derivative, ui_final, ri_final
-
 
 
 def onRemoveControlPoint(p):
@@ -251,21 +249,21 @@ def draw_BSpline_Curve():
 
 
 def drawB_Spline_Functions():
-    #In this function we calculated all the points of the b-spline functions and draw then in the 3 plot(the left-botton one)
+    # In this function we calculated all the points of the b-spline functions and draw then in the 3 plot(the left-botton one)
     ax[2].set_xlim(0, knots[-1])
     ax[2].set_ylim(0, 1)
     b_splines_functions_container.clearLines()
     lines = []
-    #Here we calculate the generate the containers of the lines for each function
+    # Here we calculate the generate the containers of the lines for each function
     for i in range(len(controlPoints) - 1):
         lines.append([])
         b_splines_functions_container.addLine(lines[i], c.colors[i])
-    #Here we get the points of each function at each knot value and store in it respective line-container
+    # Here we get the points of each function at each knot value and store in it respective line-container
     for _t in np.arange(knots[0] + 0.0000001, knots[-1], 0.01):
         result = b_splines_functions(_t, knots)
         for i in range(len(result)):
             lines[i].append(result[i])
-    #Finally we calculate the point of each function at the value of the slider to mark it with a point
+    # Finally we calculate the point of each function at the value of the slider to mark it with a point
     points = b_splines_functions(u, knots)
 
     for i in range(len(circle_bspline_functions)):
@@ -279,19 +277,19 @@ def drawB_Spline_Functions():
 
 
 def b_splines_functions(t, knots):
-    #This function returns the points of each b-spline function in a given knot or value between two knots
+    # This function returns the points of each b-spline function in a given knot or value between two knots
     global n
     global controlPoints
     sol = []
     N1 = []
-    #here we get the point of the function for the degree 1 because it is an special case
+    # here we get the point of the function for the degree 1 because it is an special case
     for j in range(1, len(knots) + 1):
         if (knots[j - 1] <= t < knots[j]):
             N1.append(1)
         else:
             N1.append(0)
     N = [N1]
-    #Then with the values of the degree 1 stored we iterate until the degre we have to obtain the points of the required functions
+    # Then with the values of the degree 1 stored we iterate until the degre we have to obtain the points of the required functions
     for m in range(1, n):
         aux = []
         for j in range(0, len(knots) - m - 1):

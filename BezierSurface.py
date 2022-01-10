@@ -28,9 +28,9 @@ def deCasteljauSurface(s, t, points):
     list = []
     # We do the deCasteljauCurve for each point of each calculated curve ("doing deCasteljau in the other direction")
     for e in points:
-        #we store the points of each curve in a array
+        # we store the points of each curve in a array
         list.append(deCasteljauCurves(t, e)[0][0])
-    #we return the reult of appliying the casteljau for curves to the points of each curve
+    # we return the reult of appliying the casteljau for curves to the points of each curve
     return (deCasteljauCurves(s, list))
 
 
@@ -73,12 +73,12 @@ def drawPoints(axis, points):
 
 
 def createBezierSurface(points, sSteps, tSteps):
-    #This function returns the calculated points of the surface when we divide the s interval [0,1] in sSteps equidistan segments and the t interval in tSteps equidistan segments
-    #We initialices a matrix where we would store each calculated point of the surface
+    # This function returns the calculated points of the surface when we divide the s interval [0,1] in sSteps equidistan segments and the t interval in tSteps equidistan segments
+    # We initialices a matrix where we would store each calculated point of the surface
     grid = np.empty((sSteps + 1, tSteps + 1, 3))
     for j in np.arange(0, 1.0 + 1 / (sSteps), 1 / sSteps):
         for t in np.arange(0, 1.0 + 1 / (tSteps), 1 / tSteps):
-            #for each value s and t we applies the casteljau algorithm for surfaces
+            # for each value s and t we applies the casteljau algorithm for surfaces
             p = deCasteljauSurface(j, t, points)[0]
 
             grid[int(j * (sSteps)), int(t * (tSteps))] = p[0]
@@ -107,9 +107,6 @@ def drawVectorsPoint(points, s, t, ax):
     ax.quiver(p1[0][0], p1[0][1], p1[0][2], v2[0], v2[1], v2[2], length=0.5, normalize=True, color="blue", linewidth=2)
 
 
-"""def drawVectors(points,t,k):
-    print(deCasteljauCurves(points,t))
-    print(deCasteljauCurves(points.transpose(),k))"""
 points = np.array([np.array([[1, 1, 1], [1, 2, 0], [1, 4, 1]]),
                    np.array([[2.5, 1, 2], [2.5, 3, 4], [2.5, 4, 2]]),
                    np.array([[4, 1, 0], [4, 2, 1], [4, 4, 0]])])
@@ -121,6 +118,6 @@ grid = createBezierSurface(points, 10, 10)
 drawPoints(ax, points)
 drawSurface(grid)
 drawTriangles(ax)
-drawVectorsPoint(points, 0.5, 0.5, ax)
+drawVectorsPoint(points, 0.5, 0.4, ax)
 
 plt.show()
