@@ -3,6 +3,11 @@ from matplotlib.backend_bases import MouseButton
 
 
 class PressablePoint:
+    """
+    This class can be used to display Pouints than can be dragged via mouse clicks.
+    Callback functions for move and deletion updated can be provided.
+    """
+
     def __init__(self, ax, coord, onRemove, onMove, color):
         self.onRemove = onRemove
         self.onMove = onMove

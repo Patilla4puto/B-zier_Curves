@@ -3,6 +3,10 @@ import numpy as np
 
 
 class KnotPlot:
+    """
+    This class displays a knot sequence like we are used to draw them in the lecture.
+    Knots can be added, dragged and removed.
+    """
 
     def __init__(self, fig, ax, knots, onUpdate):
         self.onUpdate = onUpdate
@@ -13,13 +17,10 @@ class KnotPlot:
         self.fig = fig
         self.ax = ax
         self.knots = knots
-        # self.circle = plt.Circle(coord, 0.01, color=color)
-        # ax.add_patch(self.circle)
 
         ax.set_ylim(-0.4, 3)
         ax.set_xlim(-0.5, 10.5)
         ax.get_yaxis().set_visible(False)
-        # ax.set_aspect('equal', adjustable='box', anchor='C')
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         ax.spines["left"].set_visible(False)
@@ -36,7 +37,7 @@ class KnotPlot:
         self.cidmotion = self.fig.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
     def redraw(self):
-        y = np.zeros(len(self.knots))  # np.linspace(0, 9, 20)
+        y = np.zeros(len(self.knots))
 
         if self.selectedKnot is None:
             self.knots[:] = np.sort(self.knots)
@@ -64,7 +65,6 @@ class KnotPlot:
 
         if event.button is MouseButton.LEFT and event.xdata:  # move knots with left mouse button
             self.press = True
-            # print(event.xdata)
 
             for i in range(len(self.knots)):
                 dist = abs(x - self.knots[i])
@@ -119,3 +119,5 @@ class KnotPlot:
     def disconnect(self):
         """Disconnect all callbacks."""
         self.fig.canvas.mpl_disconnect(self.cidpress)
+        self.fig.canvas.mpl_disconnect(self.cidrelease)
+        self.fig.canvas.mpl_disconnect(self.cidmotion)

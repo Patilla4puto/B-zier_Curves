@@ -15,15 +15,13 @@ matplotlib.use('Qt5Agg')
 
 c = Colors()
 
-t_slider = None
-
 fig, ax = plt.subplots(1, 2)
 plt.subplots_adjust(bottom=0.45)
 ax[0].set_xlim(0, 1)
 ax[0].set_ylim(0, 1)
 ax[0].set_aspect('equal', adjustable='box', anchor='C')
-# ax[1].set_aspect('equal', adjustable='box', anchor='C')
 
+t_slider = None
 circle = None
 circle_bspline_functions = []
 variableLabel = None
@@ -36,7 +34,7 @@ tangentArrow = None
 knots = np.linspace(1, 5, 5)
 controlPoints = []
 controlPointsCoordinates = []
-u = 0.5
+u = 2.7
 n = 2
 
 curveContainer = PolygonContainer(ax[0], 2)
@@ -48,7 +46,6 @@ axincr = plt.axes([0.7, 0.05, 0.2, 0.075])
 knotAxis = plt.axes([0.4, 0.3, 0.5, 0.075])
 
 plt.figtext(0.02, 0.9, 'left drag: move\nleft click on point: remove\nright click: add')
-
 plt.figtext(0.1, 0.275, 'left click: move\nright click: add/remove')
 
 

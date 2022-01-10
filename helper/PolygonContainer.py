@@ -3,6 +3,11 @@ import matplotlib.patches as patches
 
 
 class PolygonContainer:
+    """
+    This class serves as a container to draw one or more lines on an matplotlib axis.
+    The line list can be cleared and redrawn.
+    """
+
     def __init__(self, ax, lineWidth=1):
         self.lineWidth = lineWidth
         self.ax = ax
