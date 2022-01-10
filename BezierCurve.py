@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np1
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 import matplotlib
@@ -31,12 +31,14 @@ bernsteinContainer = PolygonContainer(ax[1])
 
 
 def bernstein_Polynomi(_t, points):
+    #The berstein algorithim for each point for a value of T
     n = len(points) - 1
     polinoms = []
     # Calculating de Berstein Polynomial
     for i in range(n + 1):
         aux = s.binom(n, i) * (_t ** i) * ((1 - _t) ** (n - i))
         polinoms.append([_t, aux])
+    #we return an array with the points of the values of each berstein polinom from each control point at the point t
     return polinoms
 
 

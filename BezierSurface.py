@@ -26,9 +26,11 @@ def deCasteljauCurves(t, points):
 
 def deCasteljauSurface(s, t, points):
     list = []
-    # We do the deCasteljauCurve for each point of the curve ("doing deCasteljau in the other direction")
+    # We do the deCasteljauCurve for each point of each calculated curve ("doing deCasteljau in the other direction")
     for e in points:
+        #we store the points of each curve in a array
         list.append(deCasteljauCurves(t, e)[0][0])
+    #we return the reult of appliying the casteljau for curves to the points of each curve
     return (deCasteljauCurves(s, list))
 
 
@@ -71,9 +73,12 @@ def drawPoints(axis, points):
 
 
 def createBezierSurface(points, sSteps, tSteps):
+    #This function returns the calculated points of the surface when we divide the s interval [0,1] in sSteps equidistan segments and the t interval in tSteps equidistan segments
+    #We initialices a matrix where we would store each calculated point of the surface
     grid = np.empty((sSteps + 1, tSteps + 1, 3))
     for j in np.arange(0, 1.0 + 1 / (sSteps), 1 / sSteps):
         for t in np.arange(0, 1.0 + 1 / (tSteps), 1 / tSteps):
+            #for each value s and t we applies the casteljau algorithm for surfaces
             p = deCasteljauSurface(j, t, points)[0]
 
             grid[int(j * (sSteps)), int(t * (tSteps))] = p[0]
