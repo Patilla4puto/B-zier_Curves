@@ -33,6 +33,7 @@ bernsteinContainer = PolygonContainer(ax[1])
 def bernstein_Polynomi(_t, points):
     n = len(points) - 1
     polinoms = []
+    # Calculating de Berstein Polynomial
     for i in range(n + 1):
         aux = s.binom(n, i) * (_t ** i) * ((1 - _t) ** (n - i))
         polinoms.append([_t, aux])
@@ -40,8 +41,10 @@ def bernstein_Polynomi(_t, points):
 
 
 def deCasteljau(t, points):
+    # Initialization of the matrix of control points
     a = [points]
     print(a)
+    # Linear interpolation for deCasteljau algorithm
     for r in range(1, len(points)):
         lenght = (len(a[0]) - 1)
         a.insert(0, [0] * lenght)
