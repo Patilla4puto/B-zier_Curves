@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-from Colors import Colors
+from helper.Colors import Colors
 
 matplotlib.use('Qt5Agg')
 
@@ -110,7 +110,6 @@ def drawVectorsPoint(points, s, t, ax):
 points = np.array([np.array([[1, 1, 1], [1, 2, 0], [1, 4, 1]]),
                    np.array([[2.5, 1, 2], [2.5, 3, 4], [2.5, 4, 2]]),
                    np.array([[4, 1, 0], [4, 2, 1], [4, 4, 0]])])
-# deCasteljauSurface(0.5, 0.5, points)
 
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 

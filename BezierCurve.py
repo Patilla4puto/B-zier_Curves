@@ -2,12 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 import matplotlib
-from Colors import Colors
+from helper.Colors import Colors
 import scipy.special as s
 from matplotlib.backend_bases import MouseButton
 
-from PressablePoint import PressablePoint
-from PolygonContainer import PolygonContainer
+from helper.PressablePoint import PressablePoint
+from helper.PolygonContainer import PolygonContainer
 
 matplotlib.use('Qt5Agg')
 c = Colors()

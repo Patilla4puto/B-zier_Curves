@@ -12,7 +12,6 @@ class PressablePoint:
         ax.add_patch(self.circle)
 
     def connect(self):
-        """Connect to all the events we need."""
         self.cidpress = self.circle.figure.canvas.mpl_connect('button_press_event', self.on_press)
         self.cidrelease = self.circle.figure.canvas.mpl_connect('button_release_event', self.on_release)
         self.cidmotion = self.circle.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
@@ -39,7 +38,6 @@ class PressablePoint:
             self.circle.remove()
             canvas.draw()
 
-
         self.press = False
         self.moved = False
 
@@ -56,3 +54,5 @@ class PressablePoint:
     def disconnect(self):
         """Disconnect all callbacks."""
         self.circle.figure.canvas.mpl_disconnect(self.cidpress)
+        self.circle.figure.canvas.mpl_disconnect(self.cidrelease)
+        self.circle.figure.canvas.mpl_disconnect(self.cidmotion)

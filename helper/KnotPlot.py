@@ -1,6 +1,5 @@
 from matplotlib.backend_bases import MouseButton
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 class KnotPlot:
@@ -20,16 +19,13 @@ class KnotPlot:
         ax.set_ylim(-0.4, 3)
         ax.set_xlim(-0.5, 10.5)
         ax.get_yaxis().set_visible(False)
-        #ax.set_aspect('equal', adjustable='box', anchor='C')
+        # ax.set_aspect('equal', adjustable='box', anchor='C')
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         ax.spines["left"].set_visible(False)
 
         self.tooltip = ax.annotate("", xy=(0, 0), xytext=(-10, -18), textcoords="offset points",
                                    bbox=dict(boxstyle="round", fc="w"), )
-
-
-
 
         self.tooltip.set_visible(False)
         self.plot, = self.ax.plot([], [], 'v')

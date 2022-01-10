@@ -6,11 +6,10 @@ from matplotlib.widgets import Button
 import matplotlib
 from matplotlib.backend_bases import MouseButton
 
-from Colors import Colors
-from KnotPlot import KnotPlot
-from PressablePoint import PressablePoint
-from PolygonContainer import PolygonContainer
-from matplotlib.gridspec import GridSpec
+from helper.Colors import Colors
+from helper.KnotPlot import KnotPlot
+from helper.PressablePoint import PressablePoint
+from helper.PolygonContainer import PolygonContainer
 
 matplotlib.use('Qt5Agg')
 
