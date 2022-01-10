@@ -27,13 +27,12 @@ ax[0].set_aspect('equal', adjustable='box', anchor='C')
 
 circle = None  # plt.Circle(currentPoint, 0.015, color="blue")
 
-
 variableLabel = None  # plt.figtext(0.05, 0.90, 'L = 5 : |Control Points|\nK = 6 : |Knots|\nn = 2 : degree')
 plt.figtext(0.35, 0.97, 'L =? K - n + 1')
 eqLabel = None  # plt.figtext(0.35, 0.94, '0 = 0')
 infoLabel = None
 
-knots = np.linspace(0, 5, 6)
+knots = np.linspace(1, 5, 5)
 controlPoints = []
 controlPointsCoordinates = []
 u = 0.5
@@ -184,7 +183,7 @@ def b_spline(n, ui, di, u):  # ui: knots, di: control points
             ri[i] += 1
     final_d, derivative, ui_final, ri_final = deBoor(n, ui.tolist(), ri, di, u)
 
-    return np.array(final_d[-1][0]), derivative
+    return np.array(final_d[-1][0]), derivative, final_d
 
 
 def add_control_point(_ax, x, y):
@@ -202,7 +201,7 @@ def draw_control_polygon(points):
 
 
 def drawPointAndTangent():
-    su, tangent = b_spline(n, knots, controlPointsCoordinates, u)
+    su, tangent, _ = b_spline(n, knots, controlPointsCoordinates, u)
 
     global tangentArrow, circle
     if tangentArrow is not None: tangentArrow.remove()
@@ -215,6 +214,15 @@ def drawPointAndTangent():
     else:
         circle.set_center(su)
         circle.figure.canvas.draw()
+
+
+def drawConstructionLines():
+    _, _, dArray = b_spline(n, knots, controlPointsCoordinates, u)
+
+    for i in range(len(dArray) - 1):
+        curveContainer.addLine(dArray[i], c.getColor())
+
+    curveContainer.redraw()
 
 
 def draw_BSpline_Curve():
@@ -261,6 +269,7 @@ def updateTextAndCheckConfiguration():
 def redrawAll():
     global controlPointsCoordinates, tangentArrow, circle
 
+    c.resetIndex()
     draw_control_polygon(controlPointsCoordinates)
     valid = updateTextAndCheckConfiguration()
     if not valid:
@@ -281,7 +290,8 @@ def redrawAll():
     draw_BSpline_Curve()
     plt.draw()
     drawPointAndTangent()
-    print("redraw all")
+    drawConstructionLines()
+
     fig.canvas.draw()
 
 
@@ -297,9 +307,8 @@ def onCanvasClick(event):
 fig.canvas.mpl_connect('button_release_event', onCanvasClick)
 
 add_control_point(ax[0], 0.1, 0.1)
-add_control_point(ax[0], 0.1, 0.3)
-add_control_point(ax[0], 0.5, 0.5)
-add_control_point(ax[0], 0.9, 0.7)
+add_control_point(ax[0], 0.1, 0.9)
+add_control_point(ax[0], 0.9, 0.1)
 add_control_point(ax[0], 0.9, 0.9)
 
 onUpdateKnots(knots)
