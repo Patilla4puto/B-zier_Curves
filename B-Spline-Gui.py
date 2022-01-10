@@ -25,8 +25,11 @@ ax[0].set_xlim(0, 1)
 ax[0].set_ylim(0, 1)
 ax[0].set_aspect('equal', adjustable='box', anchor='C')
 
+circle = None  # plt.Circle(currentPoint, 0.015, color="blue")
+
+
 variableLabel = None  # plt.figtext(0.05, 0.90, 'L = 5 : |Control Points|\nK = 6 : |Knots|\nn = 2 : degree')
-plt.figtext(0.35, 0.97, 'L = K - n + 1')
+plt.figtext(0.35, 0.97, 'L =? K - n + 1')
 eqLabel = None  # plt.figtext(0.35, 0.94, '0 = 0')
 infoLabel = None
 
@@ -80,7 +83,7 @@ def deBoor (n, ui, ri, di, u):
 
 #print(deBoor(2, [-10, -6, -2, -2, 0, 4, 8, 12, 16, 18], {-10: 1, -6 : 1 , -2 : 2 , 0 : 1, 4 : 1 , 8 : 1 , 12: 1, 16: 1, 18: 1},[-6, -4, -2, 0, -8, 0, 8, 4, 2], 6))
 
-def on_remove(p):
+def onRemoveControlPoint(p):
     p.disconnect()
     controlPoints.remove(p)
     global controlPointsCoordinates
@@ -118,23 +121,23 @@ def onUpdateKnots(k):
 
 curveContainer = PolygonContainer(ax[0], 2)
 controlPolygonContainer = PolygonContainer(ax[0])
-scatterplot = KnotPlot(fig, ax[1], knots, on_remove, onUpdateKnots)
+scatterplot = KnotPlot(fig, ax[1], knots, onUpdateKnots)
 
-axbox = plt.axes([0.3, 0.05, 0.4, 0.075])
-text_box = TextBox(axbox, '', initial="Degree 2")
+degreeLabel = None
+
+
+# axbox = plt.axes([0.3, 0.05, 0.4, 0.075])
 
 
 def incrementDegree(p):
-    global n
+    global n, degreeLabel
     n += 1
-    text_box.set_val("Degree %d" % n)
     redrawAll()
 
 
 def decrementDegree(p):
-    global n
+    global n, degreeLabel
     n = max(2, n - 1)
-    text_box.set_val("Degree %d" % n)
     redrawAll()
 
 
@@ -185,7 +188,7 @@ def b_spline(n, ui, di, u):  # ui: knots, di: control points
 
 
 def add_control_point(_ax, x, y):
-    circle = PressablePoint(_ax, [x, y], on_remove, onUpdate, c.colors[len(controlPoints)])
+    circle = PressablePoint(_ax, [x, y], onRemoveControlPoint, onUpdate, c.colors[len(controlPoints)])
     circle.connect()
     controlPoints.append(circle)
     global controlPointsCoordinates
@@ -198,13 +201,20 @@ def draw_control_polygon(points):
     controlPolygonContainer.redraw()
 
 
-def drawTangentArrow():
+def drawPointAndTangent():
     su, tangent = b_spline(n, knots, controlPointsCoordinates, u)
 
-    global tangentArrow
+    global tangentArrow, circle
     if tangentArrow is not None: tangentArrow.remove()
     vector = tangent * 0.2
     tangentArrow = ax[0].arrow(su[0], su[1], vector[0], vector[1], head_width=0.02, zorder=10)
+
+    if circle is None:
+        circle = plt.Circle(su, 0.015, color="blue")
+        ax[0].add_patch(circle)
+    else:
+        circle.set_center(su)
+        circle.figure.canvas.draw()
 
 
 def draw_BSpline_Curve():
@@ -221,10 +231,13 @@ def draw_BSpline_Curve():
 
 
 def updateTextAndCheckConfiguration():
-    global variableLabel, eqLabel, infoLabel
+    global variableLabel, eqLabel, infoLabel, degreeLabel
     if variableLabel is not None: variableLabel.remove()
     if eqLabel is not None: eqLabel.remove()
     if infoLabel is not None: infoLabel.remove()
+    if degreeLabel is not None: degreeLabel.remove()
+
+    degreeLabel = plt.figtext(0.45, 0.075, 'Degree %d' % n)
 
     L = len(controlPointsCoordinates)
     K = len(knots)
@@ -246,12 +259,10 @@ def updateTextAndCheckConfiguration():
 
 
 def redrawAll():
-    global controlPointsCoordinates, tangentArrow
-
-    valid = updateTextAndCheckConfiguration()
+    global controlPointsCoordinates, tangentArrow, circle
 
     draw_control_polygon(controlPointsCoordinates)
-
+    valid = updateTextAndCheckConfiguration()
     if not valid:
         curveContainer.clearLines()
         curveContainer.redraw()
@@ -260,12 +271,16 @@ def redrawAll():
             tangentArrow.remove()
             tangentArrow = None
 
+        if circle is not None:
+            circle.remove()
+            circle = None
+
         fig.canvas.draw()
         return
 
     draw_BSpline_Curve()
     plt.draw()
-    drawTangentArrow()
+    drawPointAndTangent()
     print("redraw all")
     fig.canvas.draw()
 
@@ -282,10 +297,10 @@ def onCanvasClick(event):
 fig.canvas.mpl_connect('button_release_event', onCanvasClick)
 
 add_control_point(ax[0], 0.1, 0.1)
-add_control_point(ax[0], 0.1, 0.2)
-add_control_point(ax[0], 0.2, 0.2)
-add_control_point(ax[0], 0.2, 0.15)
-add_control_point(ax[0], 0.2, 0.1)
+add_control_point(ax[0], 0.1, 0.3)
+add_control_point(ax[0], 0.5, 0.5)
+add_control_point(ax[0], 0.9, 0.7)
+add_control_point(ax[0], 0.9, 0.9)
 
 onUpdateKnots(knots)
 redrawAll()

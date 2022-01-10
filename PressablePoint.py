@@ -35,7 +35,10 @@ class PressablePoint:
 
         if event.button is MouseButton.LEFT and not self.moved:
             self.onRemove(self)
+            canvas = self.circle.figure.canvas
             self.circle.remove()
+            canvas.draw()
+
 
         self.press = False
         self.moved = False

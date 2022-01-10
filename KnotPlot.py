@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 
 class KnotPlot:
 
-    def __init__(self, fig, ax, knots, onRemove, onUpdate):
-        self.onRemove = onRemove
+    def __init__(self, fig, ax, knots, onUpdate):
         self.onUpdate = onUpdate
         self.press = False
         self.moved = False
@@ -96,9 +95,7 @@ class KnotPlot:
 
     def on_release(self, event):
         if event.button is MouseButton.LEFT and self.selectedKnot is not None:  # and not self.moved:
-            # self.onRemove(self)
             self.selectedKnot = None
-            # self.circle.remove()
             self.tooltip.set_visible(False)
             self.fig.canvas.draw_idle()
 
