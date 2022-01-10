@@ -13,32 +13,22 @@ colors = Colors()
 
 
 def deCasteljauCurves(t, points):
-    """a = points
-    for r in range(1, len(points)):
-        lenght = (len(a) - 1)
-        aux = [0] * lenght
-        for j in range(lenght):
-            aux[j] = ((1 - t) * a[j] + t * a[j + 1])
-        a = aux
-    print(aux)
-    return a"""
+    # Initialization of the control points matrix
     a = [points]
-
+    # Linear interpolation algorithm
     for r in range(1, len(points)):
         lenght = (len(a[0]) - 1)
         a.insert(0, lenght * [0])
-
         for j in range(lenght):
             a[0][j] = ((1 - t) * a[1][j] + t * a[1][j + 1])
-
     return a[0], a[1]
 
 
 def deCasteljauSurface(s, t, points):
     list = []
+    # We do the deCasteljauCurve for each point of the curve ("doing deCasteljau in the other direction")
     for e in points:
         list.append(deCasteljauCurves(t, e)[0][0])
-        # print(list)
     return (deCasteljauCurves(s, list))
 
 
