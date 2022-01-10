@@ -17,10 +17,10 @@ class KnotPlot:
         # self.circle = plt.Circle(coord, 0.01, color=color)
         # ax.add_patch(self.circle)
 
-        ax.set_ylim(-0.2, 3)
+        ax.set_ylim(-0.4, 3)
         ax.set_xlim(-0.5, 10.5)
         ax.get_yaxis().set_visible(False)
-        ax.set_aspect('equal', adjustable='box', anchor='C')
+        #ax.set_aspect('equal', adjustable='box', anchor='C')
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         ax.spines["left"].set_visible(False)
@@ -28,8 +28,8 @@ class KnotPlot:
         self.tooltip = ax.annotate("", xy=(0, 0), xytext=(-10, -18), textcoords="offset points",
                                    bbox=dict(boxstyle="round", fc="w"), )
 
-        pos = ax.get_position()
-        plt.figtext(pos.x0, 0.75, 'left click: move\nright click: add/remove')
+
+
 
         self.tooltip.set_visible(False)
         self.plot, = self.ax.plot([], [], 'v')
@@ -72,13 +72,13 @@ class KnotPlot:
 
             for i in range(len(self.knots)):
                 dist = abs(x - self.knots[i])
-                if dist < closestDist and dist < 0.3:
+                if dist < closestDist and dist < 0.1:
                     self.selectedKnot = i
                     closestDist = dist
         elif event.button is MouseButton.RIGHT:  # add or delete knot with right mouse button
             for i in range(len(self.knots)):
                 dist = abs(x - self.knots[i])
-                if dist < closestDist and dist < 0.3:
+                if dist < closestDist and dist < 0.1:
                     self.selectedKnot = i
                     closestDist = dist
 

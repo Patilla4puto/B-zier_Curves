@@ -17,23 +17,22 @@ matplotlib.use('Qt5Agg')
 c = Colors()
 
 t_slider = None
-fig = plt.figure(figsize=(10, 10))
-gs = GridSpec(nrows=2, ncols=2)
-ax = []
-ax.append(fig.add_subplot(gs[:, 0]))
-ax.append(fig.add_subplot(gs[0, 1]))
-ax.append(fig.add_subplot(gs[1, 1]))
-plt.subplots_adjust(bottom=0.27)
+
+fig, ax = plt.subplots(1, 2)
+plt.subplots_adjust(bottom=0.45)
 ax[0].set_xlim(0, 1)
 ax[0].set_ylim(0, 1)
 ax[0].set_aspect('equal', adjustable='box', anchor='C')
+# ax[1].set_aspect('equal', adjustable='box', anchor='C')
 
 circle = None
 circle_bspline_functions = []
 variableLabel = None
-plt.figtext(0.35, 0.97, 'L =? K - n + 1')
+plt.figtext(0.65, 0.97, 'L =? K - n + 1')
 eqLabel = None
 infoLabel = None
+degreeLabel = None
+tangentArrow = None
 
 knots = np.linspace(1, 5, 5)
 controlPoints = []
@@ -41,7 +40,17 @@ controlPointsCoordinates = []
 u = 0.5
 n = 2
 
-tangentArrow = None
+curveContainer = PolygonContainer(ax[0], 2)
+b_splines_functions_container = PolygonContainer(ax[1])
+controlPolygonContainer = PolygonContainer(ax[0])
+
+axdecr = plt.axes([0.1, 0.05, 0.2, 0.075])
+axincr = plt.axes([0.7, 0.05, 0.2, 0.075])
+knotAxis = plt.axes([0.4, 0.3, 0.5, 0.075])
+
+plt.figtext(0.02, 0.9, 'left drag: move\nleft click on point: remove\nright click: add')
+
+plt.figtext(0.1, 0.275, 'left click: move\nright click: add/remove')
 
 
 # Logic
@@ -125,17 +134,6 @@ def updateRange():
         u = t_slider.valmax
 
 
-curveContainer = PolygonContainer(ax[0], 2)
-b_splines_functions_container = PolygonContainer(ax[2])
-controlPolygonContainer = PolygonContainer(ax[0])
-scatterplot = KnotPlot(fig, ax[1], knots, onUpdateKnots)
-
-degreeLabel = None
-
-
-# axbox = plt.axes([0.3, 0.05, 0.4, 0.075])
-
-
 def incrementDegree(p):
     global n, degreeLabel
     n += 1
@@ -150,8 +148,8 @@ def decrementDegree(p):
     redrawAll()
 
 
-axdecr = plt.axes([0.1, 0.05, 0.2, 0.075])
-axincr = plt.axes([0.7, 0.05, 0.2, 0.075])
+scatterplot = KnotPlot(fig, knotAxis, knots, onUpdateKnots)
+
 bnext = Button(axdecr, '-')
 bnext.on_clicked(decrementDegree)
 bprev = Button(axincr, '+')
@@ -250,8 +248,8 @@ def draw_BSpline_Curve():
 
 def drawB_Spline_Functions():
     # In this function we calculated all the points of the b-spline functions and draw then in the 3 plot(the left-botton one)
-    ax[2].set_xlim(0, knots[-1])
-    ax[2].set_ylim(0, 1)
+    ax[1].set_xlim(0, knots[-1])
+    ax[1].set_ylim(0, 1)
     b_splines_functions_container.clearLines()
     lines = []
     # Here we calculate the generate the containers of the lines for each function
@@ -271,8 +269,8 @@ def drawB_Spline_Functions():
     circle_bspline_functions.clear()
 
     for i in range(len(points)):
-        circle_bspline_functions.insert(0, plt.Circle(points[i], 0.05, color=c.colors[i]))
-        ax[2].add_patch(circle_bspline_functions[0])
+        circle_bspline_functions.insert(0, plt.Circle(points[i], 0.03, color=c.colors[i]))
+        ax[1].add_patch(circle_bspline_functions[0])
     b_splines_functions_container.redraw()
 
 
@@ -293,9 +291,10 @@ def b_splines_functions(t, knots):
     for m in range(1, n):
         aux = []
         for j in range(0, len(knots) - m - 1):
-            aux.append(
-                N[m - 1][j] * (t - knots[j]) / (knots[j + m] - knots[j]) + N[m - 1][j + 1] * (knots[j + m + 1] - t) / (
-                        knots[j + m + 1] - knots[j + 1]))
+            value = N[m - 1][j] * (t - knots[j]) / (knots[j + m] - knots[j]) + N[m - 1][j + 1] * (
+                    knots[j + m + 1] - t) / (
+                            knots[j + m + 1] - knots[j + 1])
+            aux.append(value)
         N.append(aux)
     # we return the points(knot-value,result of the last iteration) to show then as a grafic
     for a in N[-1]:
@@ -327,9 +326,9 @@ def updateTextAndCheckConfiguration():
         infoString = '%d ' % (n + 1 - L) + 'more Control Point' \
                      + (' is needed' if n + 1 - L == 1 else 's are needed')
 
-    variableLabel = plt.figtext(0.05, 0.90, 'L = %d : |Control Points|\nK = %d : |Knots|\nn = %d : degree' % (L, K, n))
-    eqLabel = plt.figtext(0.35, 0.94, '%d =? %d - %d + 1 = %d -> %r' % (L, K, n, K - n + 1, valid))
-    infoLabel = plt.figtext(0.35, 0.90, infoString, color='red')
+    variableLabel = plt.figtext(0.35, 0.90, 'L = %d : |Control Points|\nK = %d : |Knots|\nn = %d : degree' % (L, K, n))
+    eqLabel = plt.figtext(0.65, 0.94, '%d =? %d - %d + 1 = %d -> %r' % (L, K, n, K - n + 1, valid))
+    infoLabel = plt.figtext(0.65, 0.90, infoString, color='red')
 
     return valid
 
