@@ -12,20 +12,24 @@ from Colors import Colors
 from KnotPlot import KnotPlot
 from PressablePoint import PressablePoint
 from PolygonContainer import PolygonContainer
-
+from matplotlib.gridspec import GridSpec
 matplotlib.use('Qt5Agg')
 
 c = Colors()
 
 t_slider = None
-
-fig, ax = plt.subplots(1, 2)
-plt.subplots_adjust(bottom=0.25)
+fig = plt.figure(figsize=(10, 10))
+gs = GridSpec(nrows=2, ncols=2)
+ax =[]
+ax.append(fig.add_subplot(gs[:,0]))
+ax.append(fig.add_subplot(gs[0,1]))
+ax.append(fig.add_subplot(gs[1,1]))
+plt.subplots_adjust(bottom=0.27)
 ax[0].set_xlim(0, 1)
 ax[0].set_ylim(0, 1)
 ax[0].set_aspect('equal', adjustable='box', anchor='C')
 
-knots = np.linspace(0, 5, 6)
+knots = np.linspace(0, 6, 7)
 controlPoints = []
 controlPointsCoordinates = []
 u = 0.5
@@ -59,9 +63,8 @@ def deBoor (n, ui, ri, di, u):
     for j in range(r, n+1):
         final_d.append([0][:]*(n + 1 - j))
     for j in range(r, n+1):
-        print(indexU - n + j + 1, u, ui)
+        #print(indexU - n + j + 1, u, ui)
         final_d[r][j - r] = di[indexU - n + j + 1]
-    #np.insert(ui_final, indexU + 1, u)
     ui_final.insert(indexU + 1, u)
     for k in range(r + 1, n):
         for j in range(0, n - k + 1):
@@ -108,6 +111,7 @@ def onUpdateKnots():
 
 
 curveContainer = PolygonContainer(ax[0], 2)
+b_splines_functions_container = PolygonContainer(ax[2])
 controlPolygonContainer = PolygonContainer(ax[0])
 scatterplot = KnotPlot(fig, ax[1], knots, on_remove, onUpdateKnots)
 
@@ -201,14 +205,48 @@ def draw_BSpline_Curve():
     curveContainer.clearLines()
     curveContainer.addLine(bSplinePoints, 'red')
     curveContainer.redraw()
+def drawB_Spline_Functions():
+    ax[2].set_xlim(0, knots[-1])
+    ax[2].set_ylim(0, 1)
+    b_splines_functions_container.clearLines()
+    lines = []
+    for i in range(len(controlPoints)-1):
+        lines.append([])
+        b_splines_functions_container.addLine(lines[i], c.colors[i])
 
+    for _t in np.arange(knots[0]+0.0000001, knots[-1], 0.01):
+        result = b_splines_functions(_t, knots)
+        for i in range(len(result)):
+            lines[i].append(result[i])
+    b_splines_functions_container.redraw()
+def b_splines_functions(t,knots):
+    global n
+    global controlPoints
+    sol =[]
+    N1 =[]
+    for j in range(1,len(knots)+1):
+        if(knots[j-1]< t < knots[j]):
+            N1.append(1)
+        else:
+            N1.append(0)
+    N = [N1]
+    for m in range(1, n):
+        aux=[]
+        for j in range(0, len(knots)-m-1):
+            aux.append(N[m-1][j]*(t-knots[j])/(knots[j+m]-knots[j])+N[m-1][j+1]*(knots[j+m+1]-t)/(knots[j+m+1]-knots[j+1]))
+        N.append(aux)
+    for a in N[-1]:
+        sol.append(np.array([t,a]))
+    return(sol)
 
 def redrawAll():
     global controlPointsCoordinates
     draw_control_polygon(controlPointsCoordinates)
     draw_BSpline_Curve()
+    drawB_Spline_Functions()
     plt.draw()
     #drawTangentArrow()
+
     print("redraw all")
     fig.canvas.draw()
 
@@ -226,6 +264,7 @@ add_control_point(ax[0], 0.1, 0.2)
 add_control_point(ax[0], 0.2, 0.2)
 add_control_point(ax[0], 0.2, 0.15)
 add_control_point(ax[0], 0.2, 0.1)
+add_control_point(ax[0], 0.3, 0.1)
 
 redrawAll()
 
