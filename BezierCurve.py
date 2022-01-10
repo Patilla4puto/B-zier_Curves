@@ -45,7 +45,7 @@ def bernstein_Polynomi(_t, points):
 def deCasteljau(t, points):
     # Initialization of the matrix of control points
     a = [points]
-    print(a)
+    #print(a)
     # Linear interpolation for deCasteljau algorithm
     for r in range(1, len(points)):
         lenght = (len(a[0]) - 1)
@@ -172,7 +172,6 @@ def redrawAll():
     draw_curve(controlPointsCoordinates)
     drawBersteinpolinoms(controlPointsCoordinates)
     plt.draw()
-    print("redraw all")
 
 
 def updateT(val):

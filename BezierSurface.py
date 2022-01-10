@@ -96,7 +96,7 @@ def drawSurface(grid):
 def drawVectorsPoint(points, s, t, ax):
     p0, va0 = deCasteljauSurface(s, t, points)
     v0 = va0[1] - va0[0]
-    print(p0)
+    #print(p0)
     ax.quiver(p0[0][0], p0[0][1], p0[0][2], v0[0], v0[1], v0[2], length=0.5, normalize=False, color="green",
               linewidth=2)
     aux = points[:].transpose(1, 0, 2)
