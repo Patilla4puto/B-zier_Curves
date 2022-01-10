@@ -1,11 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import TextBox
 from matplotlib.widgets import Slider
 from matplotlib.widgets import Button
 
 import matplotlib
-import scipy.special as s
 from matplotlib.backend_bases import MouseButton
 
 from Colors import Colors
@@ -13,6 +11,7 @@ from KnotPlot import KnotPlot
 from PressablePoint import PressablePoint
 from PolygonContainer import PolygonContainer
 from matplotlib.gridspec import GridSpec
+
 matplotlib.use('Qt5Agg')
 
 c = Colors()
@@ -20,20 +19,20 @@ c = Colors()
 t_slider = None
 fig = plt.figure(figsize=(10, 10))
 gs = GridSpec(nrows=2, ncols=2)
-ax =[]
-ax.append(fig.add_subplot(gs[:,0]))
-ax.append(fig.add_subplot(gs[0,1]))
-ax.append(fig.add_subplot(gs[1,1]))
+ax = []
+ax.append(fig.add_subplot(gs[:, 0]))
+ax.append(fig.add_subplot(gs[0, 1]))
+ax.append(fig.add_subplot(gs[1, 1]))
 plt.subplots_adjust(bottom=0.27)
 ax[0].set_xlim(0, 1)
 ax[0].set_ylim(0, 1)
 ax[0].set_aspect('equal', adjustable='box', anchor='C')
 
-circle = None  # plt.Circle(currentPoint, 0.015, color="blue")
-circle_bspline_functions =[]
-variableLabel = None  # plt.figtext(0.05, 0.90, 'L = 5 : |Control Points|\nK = 6 : |Knots|\nn = 2 : degree')
+circle = None
+circle_bspline_functions = []
+variableLabel = None
 plt.figtext(0.35, 0.97, 'L =? K - n + 1')
-eqLabel = None  # plt.figtext(0.35, 0.94, '0 = 0')
+eqLabel = None
 infoLabel = None
 
 knots = np.linspace(1, 5, 5)
@@ -44,34 +43,33 @@ n = 2
 
 tangentArrow = None
 
-#Logic
 
-
-def deBoor (n, ui, ri, di, u):
-    #ui_final -> final list of knots
-    #indexU -> uppercase I in Boor Algorithm
+# Logic
+def deBoor(n, ui, ri, di, u):
+    # ui_final -> final list of knots
+    # indexU -> uppercase I in Boor Algorithm
     ui_final = ui[:]
-    #ri_final -> new multiplicity
+    # ri_final -> new multiplicity
     ri_final = ri.copy()
     indexU = 0
     r = 0
-    for i in range(1,len(ui)):
+    for i in range(1, len(ui)):
         indexU = i - 1
-        if  ui[i-1] <= u <= ui[i]:
-            if u == ui[i -1]:
+        if ui[i - 1] <= u <= ui[i]:
+            if u == ui[i - 1]:
                 r = ri[u]
                 ri_final[u] += 1
             else:
                 ri_final[u] = 1
             break
-    #final_d -> final list of Boor coordinates
+    # final_d -> final list of Boor coordinates
     final_d = []
-    #final_e -> final list of Greville abcises
-    for j in range(r, n+1):
-        final_d.append([0][:]*(n + 1 - j))
-    for j in range(r, n+1):
-        #print(indexU - n + j + 1, u, ui)
-        if(indexU - n + j + 1 < 0):
+    # final_e -> final list of Greville abcises
+    for j in range(r, n + 1):
+        final_d.append([0][:] * (n + 1 - j))
+    for j in range(r, n + 1):
+        # print(indexU - n + j + 1, u, ui)
+        if (indexU - n + j + 1 < 0):
             final_d[r][j - r] = di[0]
         else:
             final_d[r][j - r] = di[indexU - n + j + 1]
@@ -79,15 +77,15 @@ def deBoor (n, ui, ri, di, u):
     ui_final.insert(indexU + 1, u)
     for k in range(r + 1, n):
         for j in range(0, n - k + 1):
-            alpha = (u - ui[indexU - n + k + j])/(ui[indexU + 1 + j] - ui[indexU - n + k + j])
-            final_d[k][j] = (1-alpha)*final_d[k-1][j] + alpha*final_d[k-1][j+1]
-    derivative = (n / (ui[indexU + 1] - ui[indexU]))*(final_d[n-1][1] - final_d[n-1][0])
+            alpha = (u - ui[indexU - n + k + j]) / (ui[indexU + 1 + j] - ui[indexU - n + k + j])
+            final_d[k][j] = (1 - alpha) * final_d[k - 1][j] + alpha * final_d[k - 1][j + 1]
+    derivative = (n / (ui[indexU + 1] - ui[indexU])) * (final_d[n - 1][1] - final_d[n - 1][0])
     final_alpha = (u - ui[indexU]) / (ui[indexU + 1] - ui[indexU])
-    final_d[n][0] = (1-final_alpha)*final_d[n-1][0] + final_alpha*final_d[n-1][1]
+    final_d[n][0] = (1 - final_alpha) * final_d[n - 1][0] + final_alpha * final_d[n - 1][1]
     return final_d, derivative, ui_final, ri_final
 
 
-#print(deBoor(2, [-10, -6, -2, -2, 0, 4, 8, 12, 16, 18], {-10: 1, -6 : 1 , -2 : 2 , 0 : 1, 4 : 1 , 8 : 1 , 12: 1, 16: 1, 18: 1},[-6, -4, -2, 0, -8, 0, 8, 4, 2], 6))
+# print(deBoor(2, [-10, -6, -2, -2, 0, 4, 8, 12, 16, 18], {-10: 1, -6 : 1 , -2 : 2 , 0 : 1, 4 : 1 , 8 : 1 , 12: 1, 16: 1, 18: 1},[-6, -4, -2, 0, -8, 0, 8, 4, 2], 6))
 
 def onRemoveControlPoint(p):
     p.disconnect()
@@ -106,6 +104,11 @@ def onUpdate(p):
 def onUpdateKnots(k):
     global knots
     knots = k
+    updateRange()
+    redrawAll()
+
+
+def updateRange():
     min = knots[n - 1]
     max = knots[-(n)]
     t_slider.closedmin = min
@@ -122,8 +125,6 @@ def onUpdateKnots(k):
         t_slider.set_val(t_slider.valmax)
         u = t_slider.valmax
 
-    redrawAll()
-
 
 curveContainer = PolygonContainer(ax[0], 2)
 b_splines_functions_container = PolygonContainer(ax[2])
@@ -139,12 +140,14 @@ degreeLabel = None
 def incrementDegree(p):
     global n, degreeLabel
     n += 1
+    updateRange()
     redrawAll()
 
 
 def decrementDegree(p):
     global n, degreeLabel
     n = max(2, n - 1)
+    updateRange()
     redrawAll()
 
 
@@ -237,23 +240,25 @@ def draw_BSpline_Curve():
     min = knots[n - 1]
     max = knots[-(n)]
     bSplinePoints = []
-    for _u in np.arange(min + 0.0000001, max, (max - min) / 50):
-        p, _,_ = b_spline(n, knots, controlPointsCoordinates, _u)
+    for _u in np.arange(min + 0.0000001, max, 0.01):
+        p, _, _ = b_spline(n, knots, controlPointsCoordinates, _u)
         bSplinePoints.append(p)
 
     curveContainer.clearLines()
     curveContainer.addLine(bSplinePoints, 'red')
     curveContainer.redraw()
+
+
 def drawB_Spline_Functions():
     ax[2].set_xlim(0, knots[-1])
     ax[2].set_ylim(0, 1)
     b_splines_functions_container.clearLines()
     lines = []
-    for i in range(len(controlPoints)-1):
+    for i in range(len(controlPoints) - 1):
         lines.append([])
         b_splines_functions_container.addLine(lines[i], c.colors[i])
 
-    for _t in np.arange(knots[0]+0.0000001, knots[-1], 0.01):
+    for _t in np.arange(knots[0] + 0.0000001, knots[-1], 0.01):
         result = b_splines_functions(_t, knots)
         for i in range(len(result)):
             lines[i].append(result[i])
@@ -267,25 +272,30 @@ def drawB_Spline_Functions():
         circle_bspline_functions.insert(0, plt.Circle(points[i], 0.05, color=c.colors[i]))
         ax[2].add_patch(circle_bspline_functions[0])
     b_splines_functions_container.redraw()
-def b_splines_functions(t,knots):
+
+
+def b_splines_functions(t, knots):
     global n
     global controlPoints
-    sol =[]
-    N1 =[]
-    for j in range(1,len(knots)+1):
-        if(knots[j-1]<= t < knots[j]):
+    sol = []
+    N1 = []
+    for j in range(1, len(knots) + 1):
+        if (knots[j - 1] <= t < knots[j]):
             N1.append(1)
         else:
             N1.append(0)
     N = [N1]
     for m in range(1, n):
-        aux=[]
-        for j in range(0, len(knots)-m-1):
-            aux.append(N[m-1][j]*(t-knots[j])/(knots[j+m]-knots[j])+N[m-1][j+1]*(knots[j+m+1]-t)/(knots[j+m+1]-knots[j+1]))
+        aux = []
+        for j in range(0, len(knots) - m - 1):
+            aux.append(
+                N[m - 1][j] * (t - knots[j]) / (knots[j + m] - knots[j]) + N[m - 1][j + 1] * (knots[j + m + 1] - t) / (
+                        knots[j + m + 1] - knots[j + 1]))
         N.append(aux)
     for a in N[-1]:
-        sol.append(np.array([t,a]))
-    return(sol)
+        sol.append(np.array([t, a]))
+    return (sol)
+
 
 def updateTextAndCheckConfiguration():
     global variableLabel, eqLabel, infoLabel, degreeLabel
@@ -299,7 +309,7 @@ def updateTextAndCheckConfiguration():
     L = len(controlPointsCoordinates)
     K = len(knots)
 
-    valid = L == K - n + 1  # is valid configuration
+    valid = L == K - n + 1 and L >= n + 1  # is valid configuration
     infoString = ''
     if L < K - n + 1:
         infoString = '%d ' % (K - L - n + 1) + 'more Control Point' \
@@ -309,7 +319,7 @@ def updateTextAndCheckConfiguration():
                      + (' is needed' if L - (K - n + 1) == 1 else 's are needed')
     elif L < n + 1:
         infoString = '%d ' % (n + 1 - L) + 'more Control Point' \
-                     + (' is needed' if L - (K - n + 1) == 1 else 's are needed')
+                     + (' is needed' if n + 1 - L == 1 else 's are needed')
 
     variableLabel = plt.figtext(0.05, 0.90, 'L = %d : |Control Points|\nK = %d : |Knots|\nn = %d : degree' % (L, K, n))
     eqLabel = plt.figtext(0.35, 0.94, '%d =? %d - %d + 1 = %d -> %r' % (L, K, n, K - n + 1, valid))
