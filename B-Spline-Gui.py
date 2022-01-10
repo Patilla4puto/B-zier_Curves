@@ -25,6 +25,11 @@ ax[0].set_xlim(0, 1)
 ax[0].set_ylim(0, 1)
 ax[0].set_aspect('equal', adjustable='box', anchor='C')
 
+variableLabel = None  # plt.figtext(0.05, 0.90, 'L = 5 : |Control Points|\nK = 6 : |Knots|\nn = 2 : degree')
+plt.figtext(0.35, 0.97, 'L = K - n + 1')
+eqLabel = None  # plt.figtext(0.35, 0.94, '0 = 0')
+infoLabel = None
+
 knots = np.linspace(0, 5, 6)
 controlPoints = []
 controlPointsCoordinates = []
@@ -215,9 +220,49 @@ def draw_BSpline_Curve():
     curveContainer.redraw()
 
 
+def updateTextAndCheckConfiguration():
+    global variableLabel, eqLabel, infoLabel
+    if variableLabel is not None: variableLabel.remove()
+    if eqLabel is not None: eqLabel.remove()
+    if infoLabel is not None: infoLabel.remove()
+
+    L = len(controlPointsCoordinates)
+    K = len(knots)
+
+    valid = L == K - n + 1  # is valid configuration
+    infoString = ''
+    if L < K - n + 1:
+        infoString = '%d ' % (K - L - n + 1) + 'more Control Point' \
+                     + (' is needed' if K - n + 1 - L == 1 else 's are needed')
+    elif L > K - n + 1:
+        infoString = '%d ' % (L - (K - n + 1)) + 'more Knot' \
+                     + (' is needed' if L - (K - n + 1) == 1 else 's are needed')
+
+    variableLabel = plt.figtext(0.05, 0.90, 'L = %d : |Control Points|\nK = %d : |Knots|\nn = %d : degree' % (L, K, n))
+    eqLabel = plt.figtext(0.35, 0.94, '%d =? %d - %d + 1 = %d -> %r' % (L, K, n, K - n + 1, valid))
+    infoLabel = plt.figtext(0.35, 0.90, infoString, color='red')
+
+    return valid
+
+
 def redrawAll():
-    global controlPointsCoordinates
+    global controlPointsCoordinates, tangentArrow
+
+    valid = updateTextAndCheckConfiguration()
+
     draw_control_polygon(controlPointsCoordinates)
+
+    if not valid:
+        curveContainer.clearLines()
+        curveContainer.redraw()
+
+        if tangentArrow is not None:
+            tangentArrow.remove()
+            tangentArrow = None
+
+        fig.canvas.draw()
+        return
+
     draw_BSpline_Curve()
     plt.draw()
     drawTangentArrow()
