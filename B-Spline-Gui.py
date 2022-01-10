@@ -307,6 +307,9 @@ def updateTextAndCheckConfiguration():
     elif L > K - n + 1:
         infoString = '%d ' % (L - (K - n + 1)) + 'more Knot' \
                      + (' is needed' if L - (K - n + 1) == 1 else 's are needed')
+    elif L < n + 1:
+        infoString = '%d ' % (n + 1 - L) + 'more Control Point' \
+                     + (' is needed' if L - (K - n + 1) == 1 else 's are needed')
 
     variableLabel = plt.figtext(0.05, 0.90, 'L = %d : |Control Points|\nK = %d : |Knots|\nn = %d : degree' % (L, K, n))
     eqLabel = plt.figtext(0.35, 0.94, '%d =? %d - %d + 1 = %d -> %r' % (L, K, n, K - n + 1, valid))
